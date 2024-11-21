@@ -28,10 +28,10 @@ REQUEST_LIMIT = 200 * 100 # max number of tweets per 15 minutes
 
 # Class for using the Twitter API handler
 class TwitterDataset:
-    def __init__(self, timedelt=timedelta(hours=1), threads=10, dataset_dir="./dataset"):
+    def __init__(self, timedelt=timedelta(hours=1), threads=10, dataset_dir="./dataset", proxies=None):
         self.logger = logging.getLogger(__name__)
         self.logger.info("Initializing Twitter Dataset")
-        self.credentials = load_credentials("./.twitter_keys.yaml", yaml_key="search_tweets_v2", env_overwrite=False)
+        self.credentials = load_credentials("./TwitterDataset/.twitter_keys.yaml", yaml_key="search_tweets_v2", env_overwrite=False)
         self.req_headers = {
             "Authorization": f"Bearer {self.credentials.get('bearer_token')}"
         }
@@ -50,6 +50,8 @@ class TwitterDataset:
         self.topics_per_15 = 0
         self.tweets_per_topic = 1000
         self.dataset_dir = dataset_dir
+        # 这里保存传入的代理设置
+        self.proxies = proxies
 
     def set_threads(self, threads):
         self.threads = threads
@@ -69,7 +71,9 @@ class TwitterDataset:
         self.logger.debug("Initializing api handlers")
         # create api handler objects for each topic
         for label, query in self.topics.items():
-            self.api_handlers.append(TwitterApiHandler(label, query, self.credentials, self.dataset_dir))
+            # 创建 API 处理器对象时，将代理传递给每个 `TwitterApiHandler`
+            # self.api_handlers.append(TwitterApiHandler(label, query, self.credentials, self.dataset_dir))
+            self.api_handlers.append(TwitterApiHandler(label, query, self.credentials, self.dataset_dir,self.proxies))
 
     def _get_tweets_from_handler(self, apiHandler):
         self.logger.info(f"Getting tweets for topic: {apiHandler.label}")

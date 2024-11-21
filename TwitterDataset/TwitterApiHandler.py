@@ -12,7 +12,7 @@ MEDIA_FIELDS = ["id", "media_key", "type", "url", "preview_image_url"]
 
 # Class for handling Twitter API calls
 class TwitterApiHandler:
-    def __init__(self, topicLabel, topicQuery, credentials, dataset_dir="./dataset"):
+    def __init__(self, topicLabel, topicQuery, credentials, dataset_dir="./dataset", proxies=None):
         self.credentials = credentials
         self.label = topicLabel
         self.query = topicQuery
@@ -23,6 +23,8 @@ class TwitterApiHandler:
             "Authorization": f"Bearer {self.credentials.get('bearer_token')}"
         }
         self.dataset_dir = dataset_dir
+        # 保存代理
+        self.proxies = proxies
         
     # get user info given a list of user ids
     def get_user_info(self, user_ids):
@@ -32,7 +34,7 @@ class TwitterApiHandler:
                 "ids": ",".join(user_ids[i: i+100]),
                 "user.fields": "public_metrics,verified"
             }
-            r = requests.get(USER_ENDPOINT, headers=self.req_headers, params=params)
+            r = requests.get(USER_ENDPOINT, headers=self.req_headers, params=params, proxies=self.proxies)
             users.extend(r.json()["data"])
         return users
 
@@ -46,7 +48,7 @@ class TwitterApiHandler:
                 "ids": ",".join(tweet_ids[i: i+100]),
                 "tweet.fields": "public_metrics",
             }
-            r = requests.get(TWEET_ENDPOINT, headers=self.req_headers, params=params)
+            r = requests.get(TWEET_ENDPOINT, headers=self.req_headers, params=params, proxies=self.proxies)
             tweet_list = r.json()["data"]
             for i in range(len(tweet_list)):
                 self.tweets[i]["public_metrics"] = tweet_list[i]["public_metrics"]
@@ -91,7 +93,10 @@ class TwitterApiHandler:
                 media_fields="type,url,preview_image_url",
             )
             result = collect_results(query, max_tweets=max_tweets, result_stream_args=self.credentials)
-
+            
+            # 请求时使用代理
+            proxies = self.proxies if self.proxies else {}
+            
             for data_dict in result:
                 if "data" in data_dict:
                     # remove sensitive tweets in data and append to tweets

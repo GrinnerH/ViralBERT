@@ -1,0 +1,15 @@
+DEBUG:TwitterDataset:Topics: dict_keys(['crypto', 'tv_movie', 'pets', 'video_games', 'cell_phones', 'covid', 'football', 'kpop'])
+DEBUG:TwitterDataset:Initializing api handlers
+DEBUG:TwitterDataset:No of fetches: 4
+DEBUG:TwitterDataset:Topics per fetch: 2
+DEBUG:TwitterDataset:Requests per topic: 10000
+DEBUG:TwitterDataset:Getting tweets
+INFO:TwitterDataset:Getting tweets for topic: crypto
+INFO:TwitterDataset:Getting tweets for topic: tv_movie
+INFO:searchtweets.result_stream:using bearer token for authentication
+INFO:searchtweets.result_stream:using bearer token for authentication
+DEBUG:searchtweets.result_stream:sending request
+DEBUG:searchtweets.result_stream:sending request
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.twitter.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.twitter.com:443
+INFO:TwitterDataset:Got tweets for topics 0 to 2
